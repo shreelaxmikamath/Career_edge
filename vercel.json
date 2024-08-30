@@ -1,13 +1,16 @@
 {
-    "builds": [{
-        "src": "career_edge/wsgi.py",
-        "use": "@vercel/python",
-        "config": { "maxLambdaSize": "15mb", "runtime": "python3.9" }
-    }],
+    "version": 2,
+    "builds": [
+      {
+        "src": "vc__handler__python.py",
+        "use": "@vercel/python"
+      }
+    ],
     "routes": [
-        {
-            "src": "/(.*)",
-            "dest": "career_edge/wsgi.py"
-        }
+      {
+        "src": "/(.*)",
+        "dest": "vc__handler__python.py"
+      }
     ]
-}
+  }
+  
