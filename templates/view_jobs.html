@@ -1,0 +1,542 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Your Job Listings</title>
+    {% load static %}
+    <style>
+        /* Global Styles */
+        :root {
+            --primary-color: #2c3e50;
+            --secondary-color: #3498db;
+            --accent-color: #1abc9c;
+            --light-bg: #f5f7fa;
+            --dark-text: #333;
+            --light-text: #fff;
+            --box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+            --border-radius: 6px;
+            --transition: all 0.3s ease;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: var(--light-bg);
+            color: var(--dark-text);
+            line-height: 1.6;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
+
+        /* Header styles */
+        header {
+            background-color: var(--primary-color);
+            padding: 15px 5%;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            box-shadow: var(--box-shadow);
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+
+        .logo {
+            display: flex;
+            align-items: center;
+        }
+
+        .logo img {
+            width: 40px;
+            height: 40px;
+            margin-right: 15px;
+            object-fit: contain;
+        }
+
+        nav ul {
+            list-style-type: none;
+            display: flex;
+        }
+
+        nav ul li {
+            margin: 0 10px;
+            position: relative;
+        }
+
+        nav ul li a {
+            text-decoration: none;
+            color: var(--light-text);
+            font-weight: 500;
+            padding: 8px 15px;
+            border-radius: var(--border-radius);
+            transition: var(--transition);
+        }
+
+        nav ul li a:hover {
+            background-color: var(--secondary-color);
+        }
+
+        /* Search bar section */
+        .search-section {
+            background-color: var(--light-text);
+            padding: 20px;
+            margin-bottom: 20px;
+            box-shadow: var(--box-shadow);
+        }
+        
+        .search-container {
+            max-width: 800px;
+            margin: 0 auto;
+        }
+        
+        .search-form {
+            display: flex;
+            width: 100%;
+        }
+        
+        .search-input {
+            flex-grow: 1;
+            padding: 12px 15px;
+            border: 1px solid #ddd;
+            border-radius: var(--border-radius) 0 0 var(--border-radius);
+            font-size: 16px;
+            transition: var(--transition);
+        }
+        
+        .search-input:focus {
+            border-color: var(--secondary-color);
+            outline: none;
+            box-shadow: 0 0 0 2px rgba(52, 152, 219, 0.2);
+        }
+        
+        .search-button {
+            padding: 12px 20px;
+            background-color: var(--accent-color);
+            color: var(--light-text);
+            border: none;
+            border-radius: 0 var(--border-radius) var(--border-radius) 0;
+            cursor: pointer;
+            font-size: 16px;
+            font-weight: 600;
+            transition: var(--transition);
+        }
+        
+        .search-button:hover {
+            background-color: #16a085;
+        }
+
+        /* Main content */
+        main {
+            flex: 1;
+            padding: 20px;
+        }
+
+        .job-grid {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 20px;
+            justify-content: center;
+        }
+
+        .job-card {
+            background: var(--light-text);
+            border-radius: var(--border-radius);
+            padding: 20px;
+            width: 350px;
+            box-shadow: var(--box-shadow);
+            transition: var(--transition);
+        }
+
+        .job-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 6px 16px rgba(0, 0, 0, 0.15);
+        }
+
+        .job-logo {
+            width: 80px;
+            height: 80px;
+            object-fit: contain;
+            margin-bottom: 15px;
+        }
+
+        .job-title {
+            margin: 10px 0;
+            color: var(--primary-color);
+            font-size: 18px;
+        }
+
+        .job-detail {
+            margin: 10px 0;
+            font-size: 14px;
+        }
+
+        .job-detail a {
+            color: var(--secondary-color);
+            text-decoration: none;
+            transition: var(--transition);
+        }
+
+        .job-detail a:hover {
+            text-decoration: underline;
+        }
+
+        .action-buttons {
+            margin-top: 20px;
+            display: flex;
+        }
+
+        .view-button {
+            padding: 8px 12px;
+            background-color: var(--secondary-color);
+            color: var(--light-text);
+            text-decoration: none;
+            border-radius: var(--border-radius);
+            margin-right: 10px;
+            font-weight: 500;
+            font-size: 14px;
+            transition: var(--transition);
+            border: none;
+            cursor: pointer;
+        }
+
+        .delete-button {
+            padding: 8px 12px;
+            background-color: #e74c3c;
+            color: var(--light-text);
+            border: none;
+            border-radius: var(--border-radius);
+            cursor: pointer;
+            font-weight: 500;
+            font-size: 14px;
+            transition: var(--transition);
+        }
+
+        .view-button:hover {
+            background-color: #2980b9;
+            transform: translateY(-2px);
+        }
+
+        .delete-button:hover {
+            background-color: #c0392b;
+            transform: translateY(-2px);
+        }
+
+        .edit-button {
+            background-color: var(--accent-color);
+        }
+
+        .edit-button:hover {
+            background-color: #16a085;
+        }
+
+        .empty-message {
+            text-align: center;
+            font-size: 18px;
+            color: var(--dark-text);
+            margin-top: 50px;
+            background-color: var(--light-text);
+            padding: 30px;
+            border-radius: var(--border-radius);
+            box-shadow: var(--box-shadow);
+            max-width: 500px;
+            margin-left: auto;
+            margin-right: auto;
+        }
+
+        .empty-message h3 {
+            color: var(--primary-color);
+            margin-bottom: 15px;
+        }
+
+        .empty-message a {
+            color: var(--secondary-color);
+            text-decoration: none;
+            font-weight: 500;
+            transition: var(--transition);
+        }
+
+        .empty-message a:hover {
+            text-decoration: underline;
+        }
+
+        /* Footer styles */
+        footer {
+            background-color: var(--primary-color);
+            padding: 15px;
+            text-align: center;
+            color: var(--light-text);
+            margin-top: auto;
+        }
+        
+        /* Notification styles */
+        .messages {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            z-index: 1000;
+            max-width: 300px;
+        }
+
+        .alert {
+            background-color: #333;
+            color: white;
+            padding: 12px 15px;
+            margin: 10px 0;
+            border-radius: var(--border-radius);
+            box-shadow: var(--box-shadow);
+            position: relative;
+            animation: slideIn 0.5s ease;
+        }
+
+        .alert-success {
+            background-color: var(--accent-color);
+        }
+
+        .alert-error {
+            background-color: #e74c3c;
+        }
+
+        .alert-warning {
+            background-color: #f39c12;
+        }
+
+        .alert-info {
+            background-color: var(--secondary-color);
+        }
+
+        .job-desc {
+            display: -webkit-box;
+            -webkit-box-orient: vertical;
+            line-clamp: 3;
+            overflow: hidden;
+        }/* Styles for highlighting jobs with new applications */
+.unseen {
+    background-color: #e6f7ff;
+    border-left: 5px solid var(--secondary-color);
+    transition: background-color 1s ease;
+}
+
+.notification-dot {
+    position: absolute;
+    top: 15px;
+    right: 15px;
+    width: 12px;
+    height: 12px;
+    background: #e74c3c;
+    border-radius: 50%;
+}
+
+.new-applications-badge {
+    position: absolute;
+    top: 15px;
+    right: 35px;
+    background-color: #e74c3c;
+    color: white;
+    padding: 3px 8px;
+    border-radius: 12px;
+    font-size: 12px;
+    font-weight: bold;
+}
+
+.application-count {
+    background-color: #e74c3c;
+    color: white;
+    border-radius: 50%;
+    padding: 2px 6px;
+    font-size: 12px;
+    margin-left: 5px;
+}
+
+/* Make sure job-card has positioning for absolute elements */
+.job-card {
+    position: relative;
+}
+
+        @keyframes slideIn {
+            from {
+                transform: translateX(100%);
+                opacity: 0;
+            }
+            to {
+                transform: translateX(0);
+                opacity: 1;
+            }
+        }
+
+        /* Responsive styles */
+        @media (max-width: 768px) {
+            header {
+                flex-direction: column;
+                padding: 15px;
+            }
+
+            .logo {
+                margin-bottom: 15px;
+            }
+
+            nav ul {
+                margin-bottom: 15px;
+            }
+
+            .job-card {
+                width: 100%;
+            }
+        }
+
+        @media (max-width: 480px) {
+            nav ul {
+                flex-wrap: wrap;
+                justify-content: center;
+            }
+
+            nav ul li {
+                margin-bottom: 10px;
+            }
+
+            .action-buttons {
+                flex-direction: column;
+            }
+
+            .view-button, .delete-button {
+                margin-right: 0;
+                margin-bottom: 10px;
+                text-align: center;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Header with navigation -->
+    <header>
+        <div class="logo">
+            <img src="{% static 'images/logo.png' %}" alt="Logo">
+            <nav>
+                <ul>
+                    <li><a href="{% url 'provider_dashboard' %}">Home</a></li>
+                    <li><a href="{% url 'edit_company_profile' %}">Edit Profile</a></li>
+                    <li><a href="{% url 'user_logout' %}">Logout</a></li>
+                </ul>
+            </nav>
+        </div>
+    </header>
+    
+    <!-- Notification messages -->
+    {% if messages %}
+    <div class="messages">
+        {% for message in messages %}
+            <div class="alert {% if message.tags %}alert-{{ message.tags }}{% endif %}">
+                {{ message }}
+            </div>
+        {% endfor %}
+    </div>
+    <script>
+        // Auto-hide messages after 5 seconds
+        setTimeout(function() {
+            const messageElements = document.querySelectorAll('.messages .alert');
+            messageElements.forEach(function(element) {
+                element.style.display = 'none';
+            });
+        }, 5000);
+    </script>
+    {% endif %}
+    
+    <!-- Search section at the top -->
+    <section class="search-section">
+        <div class="search-container">
+            <form method="GET" action="" class="search-form">
+                <input 
+                    type="text" 
+                    name="q" 
+                    placeholder="Search jobs by title or location..." 
+                    value="{{ query }}" 
+                    class="search-input"
+                />
+                
+                <button type="submit" class="search-button">Search</button>
+            </form>
+        </div>
+    </section>
+    
+    <!-- Main content with job listings -->
+    <main>
+        
+        {% if jobs %}
+        <div class="job-grid {% if job.new_apps_count > 0 %}unseen{% endif %}">
+            {% for job in jobs %}
+            <div class="job-card">
+                {% if job.new_apps_count > 0 %}
+        <span class="notification-dot"></span>
+        <div class="new-applications-badge">{{ job.new_apps_count }} new</div>
+    {% endif %}
+                {% if job.logo %}
+                    <img src="{{ job.logo.url }}" alt="Company Logo" class="job-logo">
+                {% else %}
+                    <img src="{% static 'images/dummy-logo.png' %}" alt="Dummy Logo" class="job-logo">
+                {% endif %}
+                
+                <h3 class="job-title">{{ job.title }}</h3>
+                <p class="job-detail job-desc"><strong>Description:</strong> {{ job.description|slice:":20" }}...</p>
+                <p class="job-detail"><strong>Company Website:</strong> <a href="{{ job.company }}" target="_blank">{{ job.company }}</a></p>
+                <p class="job-detail"><strong>Location:</strong> {{ job.location }}</p>
+                <p class="job-detail"><strong>Experience Required:</strong> {{ job.experience_level }}</p>
+                <p class="job-detail"><strong>Job Type:</strong> {{ job.job_type }}</p>
+                <p class="job-detail"><strong>Salary:</strong> ₹{{ job.salary }}</p>
+                <p class="job-detail"><strong>Last Date to Apply:</strong> <span class="job-last-date">{{ job.last_date_to_apply|date:"F d, Y" }}</span></p>
+                <div class="action-buttons">
+                    <a href="{% url 'view_job_applications' job.id %}" class="view-button">View Applications</a>
+                    <a href="{% url 'edit_job' job.id %}" class="view-button edit-button">Edit</a>
+                    <form action="{% url 'delete_job' job.id %}" method="post" style="display: inline;">
+                        {% csrf_token %}
+                        <button type="submit" class="delete-button" onclick="return confirm('Are you sure you want to delete this job listing?')">Delete</button>
+                    </form>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+        {% else %}
+        <div class="empty-message">
+            {% if query %}
+            <h3>NO SUCH JOB FOUND</h3>
+            <p>No jobs match your search for "<strong>{{ query }}</strong>"</p>
+            <p><a href="{% url 'view_jobs' %}">View all jobs</a></p>
+            {% else %}
+            <h3>NO JOBS AVAILABLE</h3>
+            <p>You haven't posted any jobs yet.</p>
+            <p><a href="{% url 'provider_dashboard' %}">Return to dashboard</a></p>
+            {% endif %}
+        </div>
+        {% endif %}
+    </main>
+    
+    <!-- Footer -->
+    <footer>
+        <p>&copy; 2025 Career Edge. All rights reserved.</p>
+    </footer>
+    <script>
+        // Get today's date
+        const today = new Date().toISOString().split('T')[0]; // 'YYYY-MM-DD' format
+        
+        // Loop through each job's last date to apply and check if it's passed
+        document.querySelectorAll('.job-last-date').forEach(function(lastDateElement) {
+            const lastDate = lastDateElement.textContent.trim();  // Get the last date text
+            
+            if (lastDate) {
+                // Convert the last date string to a Date object
+                const jobLastDate = new Date(lastDate);
+                
+                if (jobLastDate <= new Date(today)) {
+                    // If the last date has passed, highlight the job listing as "Application Closed"
+                    lastDateElement.parentElement.innerHTML += '<p class="job-detail" style="color: #e74c3c; font-weight: bold; margin-top: 5px;"><strong>Application Closed</strong></p>';
+                }
+            }
+        });
+    </script>
+</body>
+</html>

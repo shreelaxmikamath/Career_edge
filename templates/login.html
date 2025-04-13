@@ -1,0 +1,242 @@
+<!-- templates/login.html -->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login - Career Edge</title>
+    {% load static %}
+    <style>
+        /* Global Styles */
+        :root {
+            --primary-color: #2c3e50;
+            --secondary-color: #3498db;
+            --accent-color: #1abc9c;
+            --light-bg: #f5f7fa;
+            --dark-text: #333;
+            --light-text: #fff;
+            --box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+            --border-radius: 6px;
+            --transition: all 0.3s ease;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: var(--light-bg);
+            color: var(--dark-text);
+            line-height: 1.6;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
+
+        /* Header styles */
+        header {
+            background-color: var(--primary-color);
+            padding: 15px 5%;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            box-shadow: var(--box-shadow);
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+
+        .logo {
+            display: flex;
+            align-items: center;
+        }
+
+        .logo1 {
+            width: 40px;
+            height: 40px;
+            margin-right: 15px;
+            object-fit: contain;
+        }
+
+        nav ul {
+            list-style-type: none;
+            display: flex;
+        }
+
+        nav ul li {
+            margin: 0 10px;
+            position: relative;
+        }
+
+        nav ul li a {
+            text-decoration: none;
+            color: var(--light-text);
+            font-weight: 500;
+            padding: 8px 15px;
+            border-radius: var(--border-radius);
+            transition: var(--transition);
+        }
+
+        nav ul li a:hover {
+            background-color: var(--secondary-color);
+        }
+
+        /* Main content section */
+        main {
+            flex: 1;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 40px 20px;
+        }
+
+        /* Login form styles */
+        form {
+            background-color: var(--light-text);
+            padding: 30px;
+            border-radius: var(--border-radius);
+            box-shadow: var(--box-shadow);
+            width: 100%;
+            max-width: 400px;
+        }
+
+        form h2 {
+            margin-bottom: 20px;
+            color: var(--primary-color);
+            text-align: center;
+            font-size: 24px;
+        }
+
+        form label {
+            display: block;
+            margin-bottom: 8px;
+            color: var(--dark-text);
+            font-weight: 500;
+        }
+
+        form input[type="text"],
+        form input[type="password"] {
+            width: 100%;
+            padding: 12px;
+            margin-bottom: 20px;
+            border: 1px solid #ddd;
+            border-radius: var(--border-radius);
+            font-size: 16px;
+            transition: var(--transition);
+        }
+
+        form input[type="text"]:focus,
+        form input[type="password"]:focus {
+            border-color: var(--secondary-color);
+            outline: none;
+            box-shadow: 0 0 0 2px rgba(52, 152, 219, 0.2);
+        }
+
+        form button[type="submit"] {
+            background-color: var(--accent-color);
+            color: var(--light-text);
+            border: none;
+            padding: 12px 0;
+            border-radius: var(--border-radius);
+            cursor: pointer;
+            width: 100%;
+            font-size: 16px;
+            font-weight: 600;
+            transition: var(--transition);
+        }
+
+        form button[type="submit"]:hover {
+            background-color: #16a085;
+            transform: translateY(-2px);
+        }
+
+        /* Error message */
+        .error-message {
+            color: #e74c3c;
+            margin-top: 15px;
+            text-align: center;
+            font-size: 14px;
+        }
+
+        /* Footer styles */
+        footer {
+            background-color: var(--primary-color);
+            color: var(--light-text);
+            text-align: center;
+            padding: 15px;
+            margin-top: auto;
+        }
+
+        /* Responsive styles */
+        @media (max-width: 768px) {
+            header {
+                flex-direction: column;
+                padding: 15px;
+            }
+
+            .logo {
+                margin-bottom: 15px;
+            }
+
+            nav ul {
+                margin-bottom: 15px;
+            }
+
+            form {
+                padding: 20px;
+            }
+        }
+
+        @media (max-width: 480px) {
+            nav ul {
+                flex-wrap: wrap;
+                justify-content: center;
+            }
+
+            nav ul li {
+                margin-bottom: 10px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <div class="logo">
+            <img src="{% static 'images/logo.png' %}" alt="Career Edge Logo" class="logo1">
+            <nav>
+                <ul>
+                    <li><a href="{% url 'home' %}">Home</a></li>
+                    <li><a href="{% url 'about' %}">About Us</a></li>
+                    <li><a href="{% url 'contact' %}">Contact Us</a></li>
+                </ul>
+            </nav>
+        </div>
+    </header>
+
+    <!-- Main content section -->
+    <main>
+        <form method="post">
+            {% csrf_token %}
+            <h2>Login to Career Edge</h2>
+            <label for="username">Username</label>
+            <input type="text" id="username" name="username" placeholder="Enter your username">
+            
+            <label for="password">Password</label>
+            <input type="password" id="password" name="password" placeholder="Enter your password">
+            
+            <button type="submit">Login</button>
+            
+            {% if error %}
+                <p class="error-message">{{ error }}</p>
+            {% endif %}
+        </form>
+    </main>
+
+    <footer>
+        <p>&copy; 2025 Career Edge. All rights reserved.</p>
+    </footer>
+</body>
+</html>

@@ -1,0 +1,492 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Job Applications for {{ job.title }} - Career Edge</title>
+    {% load static %}
+    <style>
+        /* Global Styles */
+        :root {
+            --primary-color: #2c3e50;
+            --secondary-color: #3498db;
+            --accent-color: #1abc9c;
+            --light-bg: #f5f7fa;
+            --dark-text: #333;
+            --light-text: #fff;
+            --box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+            --border-radius: 6px;
+            --transition: all 0.3s ease;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: var(--light-bg);
+            color: var(--dark-text);
+            line-height: 1.6;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
+
+        /* Header styles */
+        header {
+            background-color: var(--primary-color);
+            padding: 15px 5%;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            box-shadow: var(--box-shadow);
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+
+        .logo {
+            display: flex;
+            align-items: center;
+        }
+
+        .logo img {
+            width: 40px;
+            height: 40px;
+            margin-right: 15px;
+            object-fit: contain;
+        }
+
+        nav ul {
+            list-style-type: none;
+            display: flex;
+        }
+
+        nav ul li {
+            margin: 0 10px;
+            position: relative;
+        }
+
+        nav ul li a {
+            text-decoration: none;
+            color: var(--light-text);
+            font-weight: 500;
+            padding: 8px 15px;
+            border-radius: var(--border-radius);
+            transition: var(--transition);
+        }
+
+        nav ul li a:hover {
+            background-color: var(--secondary-color);
+        }
+
+        /* Main content */
+        main {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 60px 20px;
+            max-width: 1200px;
+            margin: 0 auto;
+            width: 100%;
+        }
+
+        .page-title {
+            color: var(--primary-color);
+            margin-bottom: 40px;
+            text-align: center;
+            font-size: 28px;
+            position: relative;
+            padding-bottom: 10px;
+        }
+
+        .page-title:after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 80px;
+            height: 3px;
+            background-color: var(--accent-color);
+        }
+
+        /* Filter form */
+        .filter-form {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            gap: 15px;
+            margin-bottom: 25px;
+            width: 100%;
+        }
+
+        .filter-form input[type="text"],
+        .filter-form input[type="date"],
+        .filter-form select {
+            padding: 12px;
+            border-radius: var(--border-radius);
+            border: 1px solid #ddd;
+            font-size: 14px;
+            flex: 1;
+            min-width: 200px;
+            max-width: 250px;
+        }
+
+        .filter-form button,
+        .email-link {
+            padding: 12px 20px;
+            border: none;
+            border-radius: var(--border-radius);
+            cursor: pointer;
+            font-weight: 600;
+            font-size: 14px;
+            transition: var(--transition);
+        }
+
+        .filter-form button {
+            background-color: var(--secondary-color);
+            color: var(--light-text);
+        }
+
+        .filter-form button:hover {
+            background-color: #2980b9;
+            transform: translateY(-2px);
+        }
+
+        .email-link {
+            background-color: #7f8c8d;
+            color: var(--light-text);
+            text-decoration: none;
+            display: inline-block;
+            text-align: center;
+        }
+
+        .email-link:hover {
+            background-color: #636e72;
+            transform: translateY(-2px);
+        }
+
+        .application-count {
+            text-align: center;
+            margin: 20px 0;
+            font-size: 16px;
+            font-weight: bold;
+            color: var(--primary-color);
+        }
+
+        /* Applications list */
+        .applications-list {
+            list-style: none;
+            padding: 0;
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(330px, 1fr));
+            gap: 25px;
+            width: 100%;
+        }
+
+        .application-item {
+            background-color: var(--light-text);
+            border-radius: var(--border-radius);
+            padding: 25px;
+            box-shadow: var(--box-shadow);
+            transition: var(--transition);
+            position: relative;
+        }
+
+        .application-item:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 8px 16px rgba(0, 0, 0, 0.15);
+        }
+
+        .application-item h3 {
+            margin: 0 0 15px;
+            color: var(--primary-color);
+            font-size: 18px;
+        }
+
+        .application-item p {
+            margin: 8px 0;
+            font-size: 14px;
+            color: #444;
+        }
+
+        .unseen {
+            background-color: #e6f7ff;
+            border-left: 5px solid var(--secondary-color);
+            transition: background-color 1s ease;
+        }
+
+        .notification-dot {
+            position: absolute;
+            top: 15px;
+            right: 15px;
+            width: 12px;
+            height: 12px;
+            background: #e74c3c;
+            border-radius: 50%;
+        }
+
+        /* Status form */
+        .status-form {
+            margin-top: 20px;
+            padding-top: 15px;
+            border-top: 1px solid #eee;
+        }
+
+        .status-form label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 600;
+            color: var(--primary-color);
+        }
+
+        .status-form select {
+            width: 100%;
+            padding: 10px;
+            margin-bottom: 12px;
+            border-radius: var(--border-radius);
+            border: 1px solid #ddd;
+            font-size: 14px;
+        }
+
+        .status-form button {
+            background-color: var(--accent-color);
+            color: var(--light-text);
+            padding: 10px 15px;
+            border: none;
+            border-radius: var(--border-radius);
+            cursor: pointer;
+            font-weight: 600;
+            transition: var(--transition);
+            width: 100%;
+        }
+
+        .status-form button:hover {
+            background-color: #16a085;
+        }
+
+        /* Action links */
+        .action-links {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            margin-top: 15px;
+        }
+
+        .action-links a {
+            flex: 1;
+            padding: 10px 15px;
+            background-color: var(--secondary-color);
+            color: var(--light-text);
+            text-decoration: none;
+            border-radius: var(--border-radius);
+            text-align: center;
+            font-weight: 500;
+            font-size: 14px;
+            transition: var(--transition);
+        }
+
+        .action-links a:hover {
+            background-color: #2980b9;
+            transform: translateY(-2px);
+        }
+
+        .action-links a:last-child {
+            background-color: #7f8c8d;
+        }
+
+        .action-links a:last-child:hover {
+            background-color: #636e72;
+        }
+
+        /* Footer styles */
+        footer {
+            background-color: var(--primary-color);
+            padding: 15px;
+            text-align: center;
+            color: var(--light-text);
+            margin-top: auto;
+        }
+
+        /* Responsive styling */
+        @media (max-width: 768px) {
+            header {
+                flex-direction: column;
+                padding: 15px;
+            }
+
+            .logo {
+                margin-bottom: 15px;
+            }
+
+            nav ul {
+                flex-wrap: wrap;
+                justify-content: center;
+                margin-bottom: 10px;
+            }
+
+            .filter-form {
+                flex-direction: column;
+                align-items: center;
+            }
+
+            .filter-form input,
+            .filter-form select,
+            .filter-form button,
+            .filter-form .email-link {
+                width: 100%;
+                max-width: 100%;
+            }
+        }.messages {
+    position: fixed;
+    top: 20px;
+    right: 20px;
+    z-index: 1000;
+    max-width: 300px;
+}
+
+.alert {
+    background-color: #333;
+    color: white;
+    padding: 12px 15px;
+    margin: 10px 0;
+    border-radius: var(--border-radius);
+    box-shadow: var(--box-shadow);
+    position: relative;
+    animation: slideIn 0.5s ease;
+}
+
+.alert-success {
+    background-color: var(--accent-color);
+}
+
+.alert-error {
+    background-color: #e74c3c;
+}
+
+.alert-warning {
+    background-color: #f39c12;
+}
+
+.alert-info {
+    background-color: var(--secondary-color);
+}
+
+@keyframes slideIn {
+    from {
+        transform: translateX(100%);
+        opacity: 0;
+    }
+    to {
+        transform: translateX(0);
+        opacity: 1;
+    }
+}
+    </style>
+</head>
+<body>
+    <header>
+        {% if messages %}
+<div class="messages">
+    {% for message in messages %}
+        <div class="alert {% if message.tags %}alert-{{ message.tags }}{% endif %}">
+            {{ message }}
+        </div>
+    {% endfor %}
+</div>
+<script>
+    // Auto-hide messages after 5 seconds
+    setTimeout(function() {
+        const messageElements = document.querySelectorAll('.messages .alert');
+        messageElements.forEach(function(element) {
+            element.style.display = 'none';
+        });
+    }, 5000);
+</script>
+{% endif %}
+        <div class="logo">
+            <img src="{% static 'images/logo.png' %}" alt="Career Edge Logo">
+            <nav>
+                <ul>
+                    <li><a href="{% url 'view_jobs' %}">Back</a></li>
+                    <li><a href="{% url 'provider_dashboard' %}">Home</a></li>
+                    <li><a href="{% url 'edit_company_profile' %}">Edit Profile</a></li>
+                    <li><a href="{% url 'user_logout' %}">Logout</a></li>
+                </ul>
+            </nav>
+        </div>
+    </header>
+
+    <main>
+        <h1 class="page-title">Job Applications for {{ job.title }}</h1>
+       
+        <form method="get" class="filter-form">
+            <input type="text" name="skill" placeholder="Filter by Skill" value="{{ skill_query }}">
+            <input type="text" name="qualification" placeholder="Filter by Qualification" value="{{ qualification_query }}">
+            <select name="status">
+                <option value="">All Statuses</option>
+                {% for key, label in status_choices %}
+                    <option value="{{ key }}" {% if status_query == key %}selected{% endif %}>{{ label }}</option>
+                {% endfor %}
+            </select>
+            <button type="submit">Filter</button>
+            <a href="?" class="email-link">Clear</a>
+            <a href="{% url 'export_job_applications' job.id %}" class="email-link" style="background-color: #27ae60;">Download Excel</a>
+        </form>
+
+        <div class="application-count">
+            {{ applications.count }} application{{ applications.count|pluralize }} found
+        </div>
+
+        <ul class="applications-list">
+            {% for application in applications %}
+            <li class="application-item {% if application.id in unseen_ids %}unseen{% endif %}">
+                {% if not application.is_seen_by_provider %}
+                    <span class="notification-dot"></span>
+                {% endif %}
+                <h3>{{ application.name }}</h3>
+                <p><strong>Username:</strong> {{ application.applicant.username }}</p>
+                <p><strong>Skills:</strong> {{ application.skills }}</p>
+                <p><strong>Qualification:</strong> {{ application.qualifications }}</p>
+                <p><strong>Email:</strong> {{ application.email }}</p>
+                <p><strong>Phone:</strong> {{ application.phone }}</p>
+                <p><strong>Experience:</strong> {{ application.experience }}</p>
+                <p><strong>Applied On:</strong> {{ application.created_at|date:"d M Y, h:i A" }}</p>
+                <p><strong>Status:</strong> {{ application.get_status_display }}</p>
+
+                <form method="post" action="{% url 'update_application_status' application.id %}" class="status-form">
+                    {% csrf_token %}
+                    <label for="status_{{ application.id }}">Change Status:</label>
+                    <select name="status" id="status_{{ application.id }}">
+                        {% for key, label in application.STATUS_CHOICES %}
+                            <option value="{{ key }}" {% if application.status == key %}selected{% endif %}>{{ label }}</option>
+                        {% endfor %}
+                    </select>
+                    <button type="submit">Update Status</button>
+                </form>
+
+                <div class="action-links">
+                    <a href="{{ application.resume.url }}" download>Download Resume</a>
+                    <a href="https://mail.google.com/mail/?view=cm&fs=1&to={{ application.email }}" target="_blank">Email via Gmail</a>
+                </div>
+            </li>
+            {% empty %}
+            <li class="application-item">
+                <h3>No applications found.</h3>
+                <p>There are currently no applications for this job posting.</p>
+            </li>
+            {% endfor %}
+        </ul>
+    </main>
+
+    <footer>
+        <p>&copy; 2025 Career Edge. All rights reserved.</p>
+    </footer>
+
+</body>
+</html>

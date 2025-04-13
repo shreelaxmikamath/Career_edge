@@ -1,0 +1,862 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Job Seeker Dashboard - Career Edge</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
+    <style>
+        /* Global Styles */
+        :root {
+            --primary-color: #2c3e50;
+            --secondary-color: #3498db;
+            --accent-color: #1abc9c;
+            --light-bg: #f5f7fa;
+            --dark-text: #333;
+            --light-text: #fff;
+            --box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+            --border-radius: 8px;
+            --transition: all 0.3s ease;
+            --star-color: #f1c40f;
+            --notification-color: #e74c3c;
+            --update-bg: #e3f2fd; /* Light blue background for updates */
+            --update-header-bg: #2196f3; /* Darker blue for header of updated cards */
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: var(--light-bg);
+            color: var(--dark-text);
+            line-height: 1.6;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
+
+        /* Header styles */
+        header {
+            background-color: var(--primary-color);
+            padding: 15px 5%;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            box-shadow: var(--box-shadow);
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+        
+        /* Recommended star indicator styles */
+        .recommendation-indicator {
+            display: inline-block;
+            vertical-align: middle;
+            color: var(--star-color);
+            font-size: 14px;
+            margin-left: 5px;
+        }
+        
+        /* Notification badge */
+        .notification-badge {
+            position: absolute;
+            top: -5px;
+            right: -5px;
+            background-color: var(--notification-color);
+            color: white;
+            border-radius: 50%;
+            width: 20px;
+            height: 20px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-size: 12px;
+            font-weight: bold;
+            box-shadow: 0 0 5px rgba(0,0,0,0.3);
+        }
+        
+        /* Updated nav item with notification */
+        nav ul li a.has-updates {
+            background-color: var(--update-header-bg);
+            animation: pulse 2s infinite;
+        }
+        
+        @keyframes pulse {
+            0% {
+                box-shadow: 0 0 0 0 rgba(33, 150, 243, 0.7);
+            }
+            70% {
+                box-shadow: 0 0 0 10px rgba(33, 150, 243, 0);
+            }
+            100% {
+                box-shadow: 0 0 0 0 rgba(33, 150, 243, 0);
+            }
+        }
+        .popup {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0,0,0,0.5);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 1000;
+}
+
+.popup-content {
+    background-color: white;
+    padding: 30px;
+    border-radius: var(--border-radius);
+    box-shadow: var(--box-shadow);
+    max-width: 400px;
+    text-align: center;
+}
+
+.popup-content h3 {
+    color: var(--primary-color);
+    margin-bottom: 15px;
+}
+
+.popup-content button {
+    margin-top: 20px;
+    padding: 10px 25px;
+    background-color: var(--secondary-color);
+    color: white;
+    border: none;
+    border-radius: var(--border-radius);
+    cursor: pointer;
+}
+        .logo {
+            display: flex;
+            align-items: center;
+        }
+
+        .logo img {
+            height: 40px;
+            margin-right: 15px;
+        }
+
+        .logo-text {
+            color: var(--light-text);
+            font-size: 22px;
+            font-weight: 600;
+        }
+
+        nav ul {
+            list-style-type: none;
+            display: flex;
+            flex-wrap: wrap;
+        }
+
+        nav ul li {
+            margin: 0 5px;
+            position: relative;
+        }
+
+        nav ul li a {
+            text-decoration: none;
+            color: var(--light-text);
+            font-weight: 500;
+            padding: 8px 15px;
+            border-radius: var(--border-radius);
+            transition: var(--transition);
+            display: block;
+        }
+
+        nav ul li a:hover, nav ul li a.active {
+            background-color: var(--secondary-color);
+        }
+
+        /* Main section */
+        main {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 30px 20px;
+        }
+
+        /* Message Box Styles */
+        .messages-container {
+            max-width: 1000px;
+            width: 100%;
+            margin: 0 auto 20px;
+        }
+
+        .message-box {
+            padding: 15px;
+            margin-bottom: 15px;
+            border-radius: var(--border-radius);
+            color: #155724;
+            border: none;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+        }
+
+        .message-box.success {
+            background-color: #d4edda;
+        }
+
+        .message-box.error,
+        .message-box.warning {
+            background-color: #f8d7da;
+            color: #721c24;
+        }
+
+        .message-box.info {
+            background-color: #cce5ff;
+            color: #004085;
+        }
+        /*side bar*/
+        .sidebar {
+            background-color: var(--light-text);
+            border-radius: var(--border-radius);
+            box-shadow: var(--box-shadow);
+            padding: 25px;
+            position: sticky;
+            top: 90px;
+            max-height: calc(100vh - 150px); /* Adjust this value based on your header/footer size */
+            overflow-y: auto; /* Add scrollbar when content overflows */
+            /* Smooth scrolling for better UX */
+            scroll-behavior: smooth;
+        }
+
+        /* Customize the scrollbar appearance */
+        .sidebar::-webkit-scrollbar {
+            width: 6px;
+        }
+
+        .sidebar::-webkit-scrollbar-track {
+            background: #f1f1f1;
+            border-radius: 10px;
+        }
+
+        .sidebar::-webkit-scrollbar-thumb {
+            background: var(--secondary-color);
+            border-radius: 10px;
+        }
+
+        .sidebar::-webkit-scrollbar-thumb:hover {
+            background: var(--primary-color);
+        }
+
+        /* For Firefox */
+        .sidebar {
+            scrollbar-width: thin;
+            scrollbar-color: var(--secondary-color) #f1f1f1;
+        }
+
+        /* Make the filter form more compact */
+        .filter-form {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+
+        /* Ensure the filter form stays contained */
+        .filter-form input,
+        .filter-form select {
+            width: 100%;
+            box-sizing: border-box;
+        }
+        /* Dashboard Content */
+        .dashboard-container {
+            max-width: 1200px;
+            width: 100%;
+            margin: 0 auto;
+            display: grid;
+            grid-template-columns: 300px 1fr;
+            gap: 25px;
+        }
+
+        /* Sidebar */
+        .sidebar {
+            background-color: var(--light-text);
+            border-radius: var(--border-radius);
+            box-shadow: var(--box-shadow);
+            padding: 25px;
+            position: sticky;
+            top: 90px;
+            height: fit-content;
+        }
+
+        .sidebar h3 {
+            color: var(--primary-color);
+            margin-bottom: 20px;
+            font-size: 18px;
+            padding-bottom: 10px;
+            border-bottom: 2px solid var(--accent-color);
+        }
+
+        .filter-form {
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+        }
+
+        .filter-form input,
+        .filter-form select {
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: var(--border-radius);
+            font-family: inherit;
+            font-size: 14px;
+        }
+
+        .filter-form label {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 14px;
+        }
+
+        .filter-form button {
+            padding: 12px;
+            background-color: var(--secondary-color);
+            color: white;
+            border: none;
+            border-radius: var(--border-radius);
+            cursor: pointer;
+            transition: var(--transition);
+            font-weight: 600;
+            margin-top: 10px;
+        }
+
+        .filter-form button:hover {
+            background-color: var(--primary-color);
+        }
+
+        .filter-form .clear-btn {
+            background-color: #999;
+            text-align: center;
+            display: block;
+            text-decoration: none;
+            color: white;
+            padding: 12px;
+            border-radius: var(--border-radius);
+            transition: var(--transition);
+        }
+
+        .filter-form .clear-btn:hover {
+            background-color: #777;
+        }
+
+        /* Content Area */
+        .content-area {
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+        }
+
+        .content-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 10px;
+        }
+
+        .content-header h2 {
+            color: var(--primary-color);
+            font-size: 24px;
+            position: relative;
+        }
+
+        .content-header h2:after {
+            content: '';
+            position: absolute;
+            bottom: -8px;
+            left: 0;
+            width: 60px;
+            height: 3px;
+            background-color: var(--accent-color);
+        }
+
+        /* Jobs List - Updated to wide card format */
+        .jobs-list {
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+        }
+
+        .job-card {
+            background-color: var(--light-text);
+            border-radius: var(--border-radius);
+            overflow: hidden;
+            box-shadow: var(--box-shadow);
+            transition: var(--transition);
+            display: flex;
+            flex-direction: column;
+            text-decoration: none;
+            color: inherit;
+        }
+
+        .job-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 8px 20px rgba(0,0,0,0.15);
+        }
+
+        .job-card-content {
+            display: flex;
+            flex-direction: row;
+        }
+
+        .job-header {
+            background-color: var(--primary-color);
+            color: var(--light-text);
+            padding: 15px 20px;
+            width: 100%;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .job-title-info {
+            flex: 1;
+        }
+
+        .job-title {
+            margin: 0;
+            font-size: 20px;
+            font-weight: 600;
+        }
+
+        .job-company {
+            margin-top: 5px;
+            font-size: 15px;
+            opacity: 0.9;
+        }
+        .job-card.new-job {
+            border: 2px solid #3498db;
+            position: relative;
+            overflow: visible;
+        }
+
+        .new-job-badge {
+            position: absolute;
+            top: -10px;
+            right: 20px;
+            background-color: #3498db;
+            color: white;
+            padding: 3px 12px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: bold;
+            z-index: 10;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+        }
+        .logo-container {
+            padding: 8px;
+            border-radius: 8px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.2);
+            margin-left: 15px;
+        }
+
+        .company-logo {
+            width: 50px;
+            height: 50px;
+            object-fit: contain;
+        }
+
+        .job-body {
+            display: flex;
+            flex: 1;
+        }
+
+        .job-details {
+            padding: 20px;
+            flex-grow: 1;
+            display: flex;
+            flex-wrap: wrap;
+        }
+
+        .job-detail-group {
+            width: 50%;
+            margin-bottom: 12px;
+        }
+
+        .job-detail-label {
+            font-weight: bold;
+            color: var(--primary-color);
+            margin-bottom: 4px;
+            display: block;
+        }
+
+        .job-detail-value {
+            display: block;
+        }
+
+        .application-badge {
+            display: inline-block;
+            background-color: var(--secondary-color);
+            color: white;
+            padding: 3px 10px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: bold;
+        }
+
+        .job-actions {
+            display: flex;
+            gap: 15px;
+            padding: 15px 20px;
+            background-color: #f9f9f9;
+            border-top: 1px solid #eee;
+        }
+
+        .apply-btn, .bookmark-btn {
+            padding: 10px 20px;
+            text-align: center;
+            text-decoration: none;
+            border-radius: var(--border-radius);
+            font-size: 14px;
+            transition: var(--transition);
+            font-weight: 500;
+        }
+
+        .apply-btn {
+            background-color: var(--accent-color);
+            color: white;
+            flex: 2;
+        }
+
+        .apply-btn:hover {
+            background-color: #16a085;
+        }
+
+        .apply-btn[disabled] {
+            background-color: #ccc;
+            cursor: not-allowed;
+        }
+
+        .bookmark-btn {
+            background-color: #f0f0f0;
+            color: #333;
+            border: 1px solid #ddd;
+            flex: 1;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+        }
+
+        .bookmark-btn.bookmarked {
+            background-color: #ffeb3b;
+            color: #333;
+        }
+
+        .bookmark-btn:hover {
+            background-color: #e0e0e0;
+        }
+
+        .bookmark-btn.bookmarked:hover {
+            background-color: #ffd700;
+        }
+
+        .empty-state {
+            text-align: center;
+            padding: 50px 20px;
+            background-color: white;
+            border-radius: var(--border-radius);
+            box-shadow: var(--box-shadow);
+        }
+
+        .empty-state p {
+            font-size: 18px;
+            color: #888;
+            margin-bottom: 20px;
+        }
+        /* This needs to be added to your CSS */
+        a {
+            text-decoration: none;
+            color: black;
+        }
+
+        /* Also add this to ensure no underlines appear on hover */
+        a:hover {
+            text-decoration: none;
+        }
+        /* Footer */
+        footer {
+            background-color: var(--primary-color);
+            padding: 20px;
+            text-align: center;
+            color: var(--light-text);
+            margin-top: auto;
+        }
+
+        /* Responsive styling */
+        @media (max-width: 992px) {
+            .dashboard-container {
+                grid-template-columns: 1fr;
+            }
+
+            .sidebar {
+                position: static;
+                margin-bottom: 20px;
+            }
+        }
+
+        @media (max-width: 768px) {
+            header {
+                flex-direction: column;
+                padding: 15px;
+            }
+
+            .logo {
+                margin-bottom: 15px;
+            }
+
+            nav ul {
+                justify-content: center;
+                margin: 10px 0;
+            }
+
+            nav ul li {
+                margin-bottom: 5px;
+            }
+            
+            .job-body {
+                flex-direction: column;
+            }
+            
+            .job-detail-group {
+                width: 100%;
+            }
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <div class="logo">
+            <img src="{% static 'images/logo.png' %}" alt="Career Edge Logo">
+        </div>
+        <nav>
+            <ul>
+                <li><a href="{% url 'seeker_dashboard' %}" class="active">Home</a></li>
+                <li><a href="{% url 'saved_jobs' %}">Saved Jobs</a></li>
+                <li>
+                    <a href="{% url 'my_applications' %}" class="{% if unseen_count > 0 %}has-updates{% endif %}">
+                        My Applications
+                        {% if unseen_count > 0 %}
+                            <i class="fas fa-bell"></i>
+                            <span class="notification-badge">{{ unseen_count }}</span>
+                        {% endif %}
+                    </a>
+                </li>
+                <li>
+                    <a href="{% url 'recommended_jobs' %}" >
+                        Recommended
+                        <span class="recommendation-indicator">
+                            <i class="fas fa-star"></i>
+                        </span>
+                    </a>
+                </li>
+                <li><a href="{% url 'seeker_profile' %}">Profile</a></li>
+                <li><a href="{% url 'user_logout' %}">Logout</a></li>
+            </ul>
+        </nav>
+    </header>
+
+    <main>
+        {% if messages %}
+        <div class="messages-container">
+            {% for message in messages %}
+                <div class="message-box {{ message.tags }}">
+                    {{ message }}
+                </div>
+            {% endfor %}
+        </div>
+        {% endif %}
+        {% if show_new_jobs_popup %}
+        <div id="new-jobs-popup" class="popup">
+            <div class="popup-content">
+                <h3>New Jobs Available!</h3>
+                <p>{{ new_jobs_count }} new job{% if new_jobs_count > 1 %}s{% endif %} have been posted in the last 3 days.</p>
+                <button onclick="document.getElementById('new-jobs-popup').style.display='none';">Got it!</button>
+            </div>
+        </div>
+        {% endif %}
+        {% if unseen_count > 0 %}
+        <div class="messages-container">
+            <div class="message-box info">
+                <i class="fas fa-bell"></i> You have {{ unseen_count }} new update{% if unseen_count > 1 %}s{% endif %} on your job applications! <a href="{% url 'my_applications' %}" style="color: #004085; text-decoration: underline;">View updates</a>
+            </div>
+        </div>
+        {% endif %}
+
+        <div class="dashboard-container">
+            <!-- Sidebar with Filters -->
+            <div class="sidebar">
+                <h3>Filter Jobs</h3>
+                <form method="get" action="{% url 'search_jobs' %}" class="filter-form">
+                    <input type="text" name="q" placeholder="Job title or keywords..." value="{{ q }}">
+                    <input type="text" name="company" placeholder="Company name" value="{{ company }}">
+                    <input type="text" name="location" placeholder="Location" value="{{ location }}">
+                    <input type="number" name="min_salary" placeholder="Minimum salary" value="{{ min_salary }}">
+                    
+                    <select name="job_type">
+                        <option value="">All Job Types</option>
+                        <option value="Full-time" {% if request.GET.job_type == "Full-time" %}selected{% endif %}>Full-time</option>
+                        <option value="Part-time" {% if request.GET.job_type == "Part-time" %}selected{% endif %}>Part-time</option>
+                        <option value="Internship" {% if request.GET.job_type == "Internship" %}selected{% endif %}>Internship</option>
+                        <option value="Contract" {% if request.GET.job_type == "Contract" %}selected{% endif %}>Contract</option>
+                    </select>
+                
+                    <select name="experience_level">
+                        <option value="">All Experience Levels</option>
+                        <option value="Fresher" {% if request.GET.experience_level == "Fresher" %}selected{% endif %}>Fresher</option>
+                        <option value="Mid-level" {% if request.GET.experience_level == "Mid-level" %}selected{% endif %}>Mid-level</option>
+                        <option value="Senior" {% if request.GET.experience_level == "Senior" %}selected{% endif %}>Senior</option>
+                    </select>
+                    
+                    <div>
+                        <label for="last_date_range">Apply Before:</label>
+                        <select name="last_date_range" id="last_date_range">
+                            <option value="">Any Time</option>
+                            <option value="3" {% if request.GET.last_date_range == "3" %}selected{% endif %}>Closing in 3 days</option>
+                            <option value="7" {% if request.GET.last_date_range == "7" %}selected{% endif %}>Closing in 7 days</option>
+                            <option value="14" {% if request.GET.last_date_range == "14" %}selected{% endif %}>Closing in 14 days</option>
+                            <option value="30" {% if request.GET.last_date_range == "30" %}selected{% endif %}>Closing in 30 days</option>
+                        </select>
+                    </div>
+                    
+                    <div>
+                        <label for="sort_by">Sort By:</label>
+                        <select name="sort_by" id="sort_by">
+                            <option value="newest" {% if request.GET.sort_by == "newest" %}selected{% endif %}>Newest First</option>
+                            <option value="oldest" {% if request.GET.sort_by == "oldest" %}selected{% endif %}>Oldest First</option>
+                            <option value="closing_soon" {% if request.GET.sort_by == "closing_soon" %}selected{% endif %}>Closing Soon</option>
+                        </select>
+                    </div>
+                    
+                    <label>
+                        <input type="checkbox" name="remote" {% if request.GET.remote %}checked{% endif %}>
+                        Remote Only
+                    </label>
+                    
+                    <button type="submit">Apply Filters</button>
+                    <a href="{% url 'search_jobs' %}" class="clear-btn">Clear All</a>
+                </form>
+            </div>
+
+            <!-- Main Content Area -->
+            <div class="content-area">
+                <div class="content-header">
+                    <h2>Available Jobs</h2>
+                </div>
+
+                <!-- Jobs List - Now using a vertical list with wide cards -->
+                {% if jobs %}
+                <div class="jobs-list">
+                    {% for job in jobs %}
+                    <div class="job-card ">
+                        <div class="job-header">
+                            <div class="job-title-info">
+                                <h3 class="job-title">{{ job.title }}</h3>
+                                <p class="job-company">{{ job.company }}</p>
+                            </div>
+                            <div class="logo-container">
+                                {% if job.logo %}
+                                    <img src="{{ job.logo.url }}" alt="Company Logo" class="company-logo" />
+                                {% else %}
+                                    <img src="{% static 'images/dummy-logo.png' %}" alt="Dummy Logo" class="company-logo" />
+                                {% endif %}
+                            </div>
+                        </div>
+                        <a href="{% url 'job_details' job.id %}" class="job-body">
+                            <div class="job-details">
+                                <div class="job-detail-group">
+                                    <span class="job-detail-label">Salary:</span>
+                                    <span class="job-detail-value">₹{{ job.salary }}</span>
+                                </div>
+                                <div class="job-detail-group">
+                                    <span class="job-detail-label">Experience:</span>
+                                    <span class="job-detail-value">{{ job.experience_level }}</span>
+                                </div>
+                                <div class="job-detail-group">
+                                    <span class="job-detail-label">Job Type:</span>
+                                    <span class="job-detail-value">{{ job.job_type }}</span>
+                                </div>
+                                <div class="job-detail-group">
+                                    <span class="job-detail-label">Location:</span>
+                                    <span class="job-detail-value">
+                                        {% if "remote" in job.location|lower %}
+                                            🌐 Remote
+                                        {% else %}
+                                            📍 {{ job.location }}
+                                        {% endif %}
+                                    </span>
+                                </div>
+                                <div class="job-detail-group">
+                                    <span class="job-detail-label">Last Date:</span>
+                                    <span class="job-detail-value">{{ job.last_date_to_apply }}</span>
+                                </div>
+                                <div class="job-detail-group">
+                                    <span class="job-detail-label">Applications:</span>
+                                    <span class="job-detail-value">
+                                        <span class="application-badge">{{ job.jobapplication_set.count }}</span>
+                                    </span>
+                                </div>
+                            </div>
+                        </a>
+                        <div class="job-actions">
+                            {% if job.last_date_to_apply|date:"Y-m-d" >= today|date:"Y-m-d" %}
+                                <a href="{% url 'apply_for_job' job.id %}" class="apply-btn">Apply Now</a>
+                            {% else %}
+                                <button class="apply-btn" disabled>Application Closed</button>
+                            {% endif %}
+                            
+                            {% if job.id in saved_job_ids %}
+                                <a href="{% url 'toggle_bookmark' job.id %}" class="bookmark-btn bookmarked">
+                                    <i class="fas fa-bookmark"></i> Saved
+                                </a>
+                            {% else %}
+                                <a href="{% url 'toggle_bookmark' job.id %}" class="bookmark-btn">
+                                    <i class="far fa-bookmark"></i> Save
+                                </a>
+                            {% endif %}
+                        </div>
+                    </div>
+                    {% endfor %}
+                </div>
+                {% else %}
+                <div class="empty-state">
+                    <p>No jobs found matching your criteria.</p>
+                    <a href="{% url 'search_jobs' %}" class="apply-btn">Clear Filters</a>
+                </div>
+                {% endif %}
+            </div>
+        </div>
+    </main>
+
+    <footer>
+        <p>&copy; 2025 Career Edge. All rights reserved.</p>
+    </footer>
+    
+    <script>
+        // Auto-hide messages after 5 seconds
+        setTimeout(function() {
+            const messages = document.querySelectorAll('.message-box');
+            messages.forEach(function(element) {
+                element.style.opacity = '0';
+                element.style.transition = 'opacity 1s ease';
+                setTimeout(() => element.remove(), 1000);
+            });
+        }, 5000);
+    
+        // Highlight new jobs with a subtle animation
+        document.addEventListener('DOMContentLoaded', function() {
+            const newJobs = document.querySelectorAll('.new-job');
+            newJobs.forEach(function(element) {
+                element.scrollIntoView({ behavior: 'smooth', block: 'center' });
+            });
+        });
+    </script>
+</body>
+</html>
