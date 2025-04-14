@@ -29,7 +29,6 @@ django-js-asset==1.2.2
 django-redis==5.2.0
 django-taggit==1.2.0
 django-user-visit==0.4
-dlib==19.24.4
 dnspython==2.6.1
 email_validator==2.2.0
 et_xmlfile==2.0.0
